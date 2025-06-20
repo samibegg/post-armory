@@ -76,19 +76,19 @@ export default function SettingsPage() {
                                     <p className="text-sm text-slate-400">Select which details to include in the AI prompt context.</p>
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-4">
-                                            <input name="business_name" value={settings.business_name} onChange={handleInputChange} placeholder="Business Name" className="flex-grow bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
+                                            <input name="business_name" value={settings.business_name} onChange={handleInputChange} placeholder="Business Name" className="flex-grow bg-slate-300 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
                                             <label className="flex items-center space-x-2 text-sm text-slate-300"><input type="checkbox" name="include_business_name" checked={settings.include_business_name} onChange={handleInputChange} className="h-4 w-4 rounded bg-slate-700 border-slate-500 text-cyan-600 focus:ring-cyan-500" /><span>Include</span></label>
                                         </div>
                                          <div className="flex items-center gap-4">
-                                            <input name="email" value={settings.email} onChange={handleInputChange} placeholder="Contact Email" className="flex-grow bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
+                                            <input name="email" value={settings.email} onChange={handleInputChange} placeholder="Contact Email" className="flex-grow bg-slate-300 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
                                             <label className="flex items-center space-x-2 text-sm text-slate-300"><input type="checkbox" name="include_email" checked={settings.include_email} onChange={handleInputChange} className="h-4 w-4 rounded bg-slate-700 border-slate-500 text-cyan-600 focus:ring-cyan-500" /><span>Include</span></label>
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <input name="phone" value={settings.phone} onChange={handleInputChange} placeholder="Phone Number" className="flex-grow bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
+                                            <input name="phone" value={settings.phone} onChange={handleInputChange} placeholder="Phone Number" className="flex-grow bg-slate-300 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
                                             <label className="flex items-center space-x-2 text-sm text-slate-300"><input type="checkbox" name="include_phone" checked={settings.include_phone} onChange={handleInputChange} className="h-4 w-4 rounded bg-slate-700 border-slate-500 text-cyan-600 focus:ring-cyan-500" /><span>Include</span></label>
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <input name="address" value={settings.address} onChange={handleInputChange} placeholder="Address" className="flex-grow bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
+                                            <input name="address" value={settings.address} onChange={handleInputChange} placeholder="Address" className="flex-grow bg-slate-300 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
                                             <label className="flex items-center space-x-2 text-sm text-slate-300"><input type="checkbox" name="include_address" checked={settings.include_address} onChange={handleInputChange} className="h-4 w-4 rounded bg-slate-700 border-slate-500 text-cyan-600 focus:ring-cyan-500" /><span>Include</span></label>
                                         </div>
                                     </div>
@@ -96,14 +96,14 @@ export default function SettingsPage() {
                                 <Tab.Panel>
                                     <h2 className="text-xl font-semibold text-slate-100 mb-2">AI System Prompt</h2>
                                     <div className="text-xs text-slate-400 space-y-1 mb-2">
-                                        <p>To get the best results, provide the AI with detailed context about your brand's personality.</p>
+                                        <p>To get the best results, provide the AI with detailed context about your brand&apos;s personality.</p>
                                         <ul className="list-disc list-inside pl-2 space-y-1">
-                                            <li><strong>Voice and Tone:</strong> e.g., "The tone should be encouraging and humorous."</li>
-                                            <li><strong>Keywords:</strong> e.g., "Always include keywords like #Productivity, #AI."</li>
-                                            <li><strong>Goals:</strong> e.g., "The goal is to drive traffic to my blog."</li>
+                                            <li><strong>Voice and Tone:</strong> e.g., &quot;The tone should be encouraging and humorous.&quot;</li>
+                                            <li><strong>Keywords:</strong> e.g., &quot;Always include keywords like #Productivity, #AI.&quot;</li>
+                                            <li><strong>Goals:</strong> e.g., &quot;The goal is to drive traffic to my blog.&quot;</li>
                                         </ul>
                                     </div>
-                                    <textarea name="system_prompt" rows="8" value={settings.system_prompt} onChange={handleInputChange} placeholder="e.g., I am a solo developer creating AI tools..." className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
+                                    <textarea name="system_prompt" rows="8" value={settings.system_prompt} onChange={handleInputChange} placeholder="e.g., I am a solo developer creating AI tools..." className="w-full bg-slate-300 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
                                 </Tab.Panel>
                                 <Tab.Panel className="space-y-6">
                                     <div className="space-y-4">
