@@ -1,16 +1,41 @@
+// --- /components/Header.js (UPDATED) ---
+import { useState } from 'react'
+import { useSession, signOut } from "next-auth/react"
+import Link from 'next/link'
+import AuthModal from './AuthModal'
+
 export default function Header() {
+  const { data: session } = useSession()
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
-    <header className="w-full bg-slate-900 shadow-md">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          <div className="flex items-center">
-             <svg className="h-8 w-8 text-sky-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 11c0 3.517-1.009 6.786-2.673 9.397m-1.656 0A10.002 10.002 0 014 13H2a12.002 12.002 0 005.673 10.397m1.656 0L12 21m0-10v-1a2 2 0 00-2-2h-1m3 3h1a2 2 0 002-2v-1m-5 5v1a2 2 0 002 2h1m-3-3h-1a2 2 0 00-2 2v1" />
-            </svg>
-            <h1 className="text-2xl font-bold text-white ml-3">Social Post Generator</h1>
+    <>
+      <AuthModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <header className="w-full bg-slate-900/80 backdrop-blur-sm sticky top-0 z-40 border-b border-slate-700/50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            <Link href={session ? "/generator" : "/"} className="flex items-center space-x-3">
+               <svg className="h-8 w-8 text-cyan-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L9 13"/></svg>
+              <h1 className="text-2xl font-bold text-slate-100">Post Armory</h1>
+            </Link>
+            <div className="flex items-center space-x-4">
+              {session ? (
+                <>
+                  <Link href="/generator" className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors hidden sm:block">Generator</Link>
+                  <Link href="/settings" className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors hidden sm:block">Settings</Link>
+                  <button onClick={() => signOut()} className="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-700/50 rounded-md hover:bg-slate-700 transition-colors">
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <button onClick={() => setIsModalOpen(true)} className="px-4 py-2 text-sm font-semibold text-white bg-cyan-600 rounded-md hover:bg-cyan-700 transition-colors">
+                  Sign In
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }
