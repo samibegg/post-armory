@@ -5,10 +5,20 @@ import { Tab } from '@headlessui/react';
 import { nextAuthOptions } from "@/lib/auth";
 import Header from '../components/Header';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { Twitter, Facebook, Instagram, Linkedin, MessageSquare, PilcrowSquare, Globe } from 'lucide-react';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
+
+const platformFields = [
+    { name: 'X', icon: <Twitter className="w-5 h-5 text-slate-400" />, urlKey: 'x_url', apiKey: 'x_api_key', docLink: 'https://docs.x.com/x-api/getting-started/getting-access' },
+    { name: 'Facebook', icon: <Facebook className="w-5 h-5 text-slate-400" />, urlKey: 'facebook_url', apiKey: 'facebook_token', docLink: 'https://developers.facebook.com/docs/facebook-login/guides/access-tokens/get-long-lived/' },
+    { name: 'Instagram', icon: <Instagram className="w-5 h-5 text-slate-400" />, urlKey: 'instagram_url', apiKey: 'instagram_token', docLink: 'https://developers.facebook.com/docs/instagram-platform/' },
+    { name: 'LinkedIn', icon: <Linkedin className="w-5 h-5 text-slate-400" />, urlKey: 'linkedin_url', apiKey: 'linkedin_token', docLink: 'https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow?tabs=HTTPS1/' },
+    { name: 'TikTok', icon: <MessageSquare className="w-5 h-5 text-slate-400" />, urlKey: 'tiktok_url', apiKey: 'tiktok_token', docLink: 'https://developers.tiktok.com/doc/login-kit-manage-user-access-tokens/' },
+    { name: 'Snapchat', icon: <PilcrowSquare className="w-5 h-5 text-slate-400" />, urlKey: 'snapchat_url', apiKey: 'snapchat_token', docLink: 'https://marketingapi.snapchat.com/' }
+];
 
 export default function SettingsPage() {
     const [settings, setSettings] = useStateSettings({
@@ -106,51 +116,28 @@ export default function SettingsPage() {
                                     <textarea name="system_prompt" rows="8" value={settings.system_prompt} onChange={handleInputChange} placeholder="e.g., I am a solo developer creating AI tools..." className="w-full bg-slate-300 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
                                 </Tab.Panel>
                                 <Tab.Panel className="space-y-6">
+                                    <h2 className="text-xl font-semibold text-slate-100">API Keys & Social Links</h2>
+                                    
                                     <div className="space-y-4">
-                                        <h2 className="text-xl font-semibold text-slate-100">API Keys & Social Links</h2>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <input name="x_url" value={settings.x_url} onChange={handleInputChange} placeholder="X / Twitter URL" className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
-                                                <input type="password" name="x_api_key" value={settings.x_api_key} onChange={handleInputChange} placeholder="X (Twitter) API Key" className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
-                                            </div>
-                                            <p className="text-xs text-slate-400 -mt-2 pl-1">Get your keys from the <a href="https://developer.twitter.com/en/portal/dashboard" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">X Developer Portal</a>.</p>
+                                        <div className="flex items-center gap-2">
+                                            <Globe className="w-5 h-5 text-slate-400" />
+                                            <input name="website_url" value={settings.website_url} onChange={handleInputChange} placeholder="https://yourwebsite.com" className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
                                         </div>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <input name="facebook_url" value={settings.facebook_url} onChange={handleInputChange} placeholder="Facebook Page URL" className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
-                                                <input type="password" name="facebook_token" value={settings.facebook_token} onChange={handleInputChange} placeholder="Facebook API Token" className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
-                                            </div>
-                                            <p className="text-xs text-slate-400 -mt-2 pl-1">Get your token from the <a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Meta for Developers</a> page.</p>
-                                        </div>
-                                         <div className="space-y-4">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <input name="instagram_url" value={settings.instagram_url} onChange={handleInputChange} placeholder="Instagram URL" className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
-                                                <input type="password" name="instagram_token" value={settings.instagram_token} onChange={handleInputChange} placeholder="Instagram API Token" className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
-                                            </div>
-                                             <p className="text-xs text-slate-400 -mt-2 pl-1">Get your token from the <a href="https://developers.facebook.com/docs/instagram-basic-display-api/" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Meta for Developers</a> page.</p>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <input name="linkedin_url" value={settings.linkedin_url} onChange={handleInputChange} placeholder="LinkedIn URL" className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
-                                                <input type="password" name="linkedin_token" value={settings.linkedin_token} onChange={handleInputChange} placeholder="LinkedIn API Token" className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
-                                            </div>
-                                            <p className="text-xs text-slate-400 -mt-2 pl-1">Get your keys from the <a href="https://www.linkedin.com/developers/" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">LinkedIn Developer Portal</a>.</p>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <input name="tiktok_url" value={settings.tiktok_url} onChange={handleInputChange} placeholder="TikTok URL" className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
-                                                <input type="password" name="tiktok_token" value={settings.tiktok_token} onChange={handleInputChange} placeholder="TikTok API Token" className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
-                                            </div>
-                                            <p className="text-xs text-slate-400 -mt-2 pl-1">Get your keys from the <a href="https://developers.tiktok.com/" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">TikTok for Developers</a> portal.</p>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <input name="snapchat_url" value={settings.snapchat_url} onChange={handleInputChange} placeholder="Snapchat URL" className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
-                                                <input type="password" name="snapchat_token" value={settings.snapchat_token} onChange={handleInputChange} placeholder="Snapchat API Token" className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
-                                            </div>
-                                            <p className="text-xs text-slate-400 -mt-2 pl-1">Get your keys from the <a href="https://marketingapi.snapchat.com/" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Snapchat Marketing API</a>.</p>
-                                        </div>
+                                        <hr className="border-slate-700" />
                                     </div>
+                                    
+                                    {platformFields.map(platform => (
+                                        <div key={platform.name} className="space-y-2">
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex-shrink-0 w-6 text-center">{platform.icon}</div>
+                                                <div className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <input name={platform.urlKey} value={settings[platform.urlKey]} onChange={handleInputChange} placeholder={`${platform.name} URL`} className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
+                                                    <input type="password" name={platform.apiKey} value={settings[platform.apiKey]} onChange={handleInputChange} placeholder={`${platform.name} API Key/Token`} className="w-full bg-slate-900 border border-slate-600 rounded-md py-2 px-3 focus:ring-cyan-500 focus:border-cyan-500" />
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-slate-400 pl-10">Get your keys from the <a href={platform.docLink} target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">{platform.name} Developer Portal</a>.</p>
+                                        </div>
+                                    ))}
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>
