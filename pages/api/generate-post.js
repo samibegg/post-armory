@@ -1,9 +1,9 @@
-// --- /pages/api/generate-post.js (UPDATED) ---
+// --- /pages/api/generate-post.js ---
 import { getServerSession } from "next-auth/next"
-import { nextAuthOptions } from "@/lib/auth" // Import shared config with new name
+import { nextAuthOptions as generatePostAuthOptions } from "@/lib/auth" 
 
 export default async function generatePostAPI(req, res) {
-  const session = await getServerSession(req, res, nextAuthOptions);
+  const session = await getServerSession(req, res, generatePostAuthOptions);
   if (!session) {
     return res.status(401).json({ message: "Unauthorized." });
   }
@@ -12,20 +12,28 @@ export default async function generatePostAPI(req, res) {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
   
-  const { idea, system_prompt } = req.body;
+  const { idea, userSettings } = req.body;
 
   if (!idea) {
     return res.status(400).json({ message: 'Idea is required' });
   }
 
   try {
-    const userContext = system_prompt 
-      ? `Here is some context about the user and their brand:\n---\n${system_prompt}\n---\n\n`
-      : "";
-
-    const finalPrompt = `${userContext}Based on the context (if provided), generate 6 distinct social media posts for the following idea: "${idea}". 
+    let userContext = "Here is some context about the user, their brand, and their goals. Use this to tailor the generated posts:\n";
+    if (userSettings?.system_prompt) {
+        userContext += `\n**Overall Voice, Tone, and Instructions:**\n${userSettings.system_prompt}\n`;
+    }
+    if (userSettings?.include_business_name && userSettings.business_name) userContext += `\n- Business Name: ${userSettings.business_name}`;
+    if (userSettings?.include_email && userSettings.email) userContext += `\n- Contact Email: ${userSettings.email}`;
+    if (userSettings?.include_phone && userSettings.phone) userContext += `\n- Contact Phone: ${userSettings.phone}`;
+    if (userSettings?.include_address && userSettings.address) userContext += `\n- Business Address: ${userSettings.address}`;
+    if (userSettings?.website_url) userContext += `\n- Main Website: ${userSettings.website_url}`;
+    if (userSettings?.snapchat_url) userContext += `\n- Snapchat: ${userSettings.snapchat_url}`;
+    userContext += "\n---\n\n";
     
-    Create one post for each of these platforms: X (formerly Twitter), Snapchat, TikTok, LinkedIn, Facebook, and Instagram.
+    const finalPrompt = `${userContext}Based on the detailed context provided, generate 6 distinct social media posts for the following idea: "${idea}". 
+    
+    Create one post for each platform: X (formerly Twitter), Snapchat, TikTok, LinkedIn, Facebook, and Instagram.
 
     For each post, provide:
     1.  A "platform".
@@ -59,5 +67,3 @@ export default async function generatePostAPI(req, res) {
     res.status(500).json({ message: 'Failed to generate post.', error: error.message });
   }
 }
-
-

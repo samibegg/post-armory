@@ -1,7 +1,7 @@
 // --- /pages/generator.js (UPDATED) ---
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { getServerSession } from "next-auth/next";
-import { nextAuthOptions } from "@/lib/auth"; // Import shared config with new name
+import { nextAuthOptions } from "@/lib/auth"; 
 import Header from '../components/Header';
 import IdeaForm from '../components/IdeaForm';
 import PostCard from '../components/PostCard';
@@ -9,7 +9,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function GeneratorPage() {
   const [idea, setIdea] = useState('');
-  const [systemPrompt, setSystemPrompt] = useState('');
+  const [userSettings, setUserSettings] = useState({}); 
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -18,12 +18,35 @@ export default function GeneratorPage() {
       fetch('/api/settings')
         .then(res => res.json())
         .then(data => {
-          if (data.system_prompt) {
-            setSystemPrompt(data.system_prompt);
-          }
+          setUserSettings(data);
         })
-        .catch(err => console.error("Could not fetch system prompt:", err));
+        .catch(err => console.error("Could not fetch user settings:", err));
   }, []);
+  
+  const composedPrompt = useMemo(() => {
+    let userContext = "Here is some context about the user, their brand, and their goals. Use this to tailor the generated posts:\n";
+    if (userSettings?.system_prompt) {
+        userContext += `\n**Overall Voice, Tone, and Instructions:**\n${userSettings.system_prompt}\n`;
+    }
+    if (userSettings?.include_business_name && userSettings.business_name) userContext += `\n- Business Name: ${userSettings.business_name}`;
+    if (userSettings?.include_email && userSettings.email) userContext += `\n- Contact Email: ${userSettings.email}`;
+    if (userSettings?.include_phone && userSettings.phone) userContext += `\n- Contact Phone: ${userSettings.phone}`;
+    if (userSettings?.include_address && userSettings.address) userContext += `\n- Business Address: ${userSettings.address}`;
+    if (userSettings?.website_url) userContext += `\n- Main Website: ${userSettings.website_url}`;
+    if (userSettings?.snapchat_url) userContext += `\n- Snapchat: ${userSettings.snapchat_url}`;
+    userContext += "\n---\n\n";
+    
+    return `${userContext}Based on the detailed context provided, generate 6 distinct social media posts for the following idea: "${idea}". 
+    
+    Create one post for each platform: X (formerly Twitter), Snapchat, TikTok, LinkedIn, Facebook, and Instagram.
+
+    For each post, provide:
+    1.  A "platform".
+    2.  A "content" body tailored to the platform's style. For TikTok/Snapchat, suggest a visual idea/script.
+    3.  A list of relevant "hashtags".
+
+    Return the result as a JSON array.`;
+  }, [idea, userSettings]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,7 +58,7 @@ export default function GeneratorPage() {
       const response = await fetch('/api/generate-post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idea, system_prompt: systemPrompt }),
+        body: JSON.stringify({ idea, userSettings }), 
       });
       
       const data = await response.json();
@@ -52,12 +75,27 @@ export default function GeneratorPage() {
     <div className="min-h-screen bg-slate-900">
       <Header />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
-        <IdeaForm 
-            idea={idea} 
-            setIdea={setIdea} 
-            handleSubmit={handleSubmit} 
-            isLoading={isLoading} 
-        />
+        <div className="max-w-4xl mx-auto">
+            <IdeaForm 
+                idea={idea} 
+                setIdea={setIdea} 
+                handleSubmit={handleSubmit} 
+                isLoading={isLoading} 
+                rows={8} // Increased rows
+            />
+            
+            <div className="mt-8">
+                <h3 className="text-lg font-semibold text-slate-300 mb-2">Live Prompt Preview</h3>
+                <p className="text-xs text-slate-400 mb-2">This is the complete prompt, including your settings, that will be sent to the AI.</p>
+                <textarea
+                    value={composedPrompt}
+                    readOnly
+                    rows={15}
+                    className="w-full p-4 bg-slate-900/50 ring-1 ring-slate-700 rounded-lg text-slate-400 text-xs font-mono"
+                />
+            </div>
+        </div>
+
         <div className="mt-16">
           {isLoading && <LoadingSpinner />}
           {error && <p className="text-center text-red-400 bg-red-900/50 p-4 rounded-lg">Error: {error}</p>}

@@ -1,7 +1,8 @@
 // --- /components/IdeaForm.js (UPDATED) ---
-export default function IdeaForm({ idea, setIdea, handleSubmit, isLoading }) {
+export default function IdeaForm({ idea, setIdea, handleSubmit, isLoading, rows = 4 }) {
   return (
-    <div className="w-full max-w-2xl mx-auto bg-slate-800/30 ring-1 ring-slate-700/50 p-6 sm:p-8 rounded-2xl shadow-2xl backdrop-blur-sm">
+    // Removed max-width class to allow parent to control width
+    <div className="w-full bg-slate-800/30 ring-1 ring-slate-700/50 p-6 sm:p-8 rounded-2xl shadow-2xl backdrop-blur-sm">
       <form onSubmit={handleSubmit}>
         <label htmlFor="idea" className="block text-lg font-medium text-slate-200 mb-3">
           Enter your post idea
@@ -9,7 +10,7 @@ export default function IdeaForm({ idea, setIdea, handleSubmit, isLoading }) {
         <textarea
           id="idea"
           name="idea"
-          rows="4"
+          rows={rows} // Use the rows prop
           className="w-full p-4 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition-all"
           placeholder="e.g., 'A new AI tool that automatically generates stunning presentations from a simple text prompt...'"
           value={idea}
