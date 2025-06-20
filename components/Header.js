@@ -22,6 +22,7 @@ export default function Header() {
               {session ? (
                 <>
                   <Link href="/generator" className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors hidden sm:block">Generator</Link>
+                  <Link href="/poster" className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors hidden sm:block">Poster</Link>
                   <Link href="/settings" className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors hidden sm:block">Settings</Link>
                   <button onClick={() => signOut()} className="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-700/50 rounded-md hover:bg-slate-700 transition-colors">
                     Sign Out
