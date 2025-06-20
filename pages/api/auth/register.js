@@ -1,5 +1,5 @@
 // --- /pages/api/auth/register.js (NEW) ---
-import clientPromise from '../../../lib/mongodb';
+import clientPromiseAuth from "@/lib/mongodb" // Using path alias
 import bcrypt from 'bcryptjs';
 
 export default async function handler(req, res) {
@@ -14,8 +14,8 @@ export default async function handler(req, res) {
       return res.status(422).json({ message: 'Invalid input.' });
     }
 
-    const client = await clientPromise;
-    const db = client.db("social_media_posts");
+    const client = await clientPromiseAuth;
+    const db = client.db("postarmory");
     const usersCollection = db.collection("users");
 
     const existingUser = await usersCollection.findOne({ email });

@@ -1,14 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 const config = {
-  // THIS IS THE CORRECTED CONTENT ARRAY FOR THE PAGES ROUTER
   content: [
-    './pages/**/*.{js,ts,jsx,tsx}',
-    './components/**/*.{js,ts,jsx,tsx}',
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    './node_modules/@headlessui/react/dist/components/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    require('@headlessui/tailwindcss')
+  ],
 };
 
 export default config;

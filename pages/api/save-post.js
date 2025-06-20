@@ -1,9 +1,10 @@
-// --- /pages/api/save-post.js ---
-import { getSession as getSavePostSession } from "next-auth/react"
-import clientPromiseSavePost from '../../lib/mongodb'
+// --- /pages/api/save-post.js (UPDATED) ---
+import { getServerSession } from "next-auth/next"
+import clientPromiseSavePost from '@/lib/mongodb';
+import { nextAuthOptions } from "@/lib/auth" // Import shared config with new name
 
-export async function savePost(req, res) {
-    const session = await getSavePostSession({ req })
+export default async function savePost(req, res) {
+    const session = await getServerSession(req, res, nextAuthOptions); // Use getServerSession
     if (!session) {
       return res.status(401).json({ message: "Unauthorized." });
     }
@@ -13,7 +14,7 @@ export async function savePost(req, res) {
     try {
       const { platform, content, hashtags } = req.body;
       const client = await clientPromiseSavePost;
-      const db = client.db("social_media_posts");
+      const db = client.db("postarmory");
       const postDocument = {
         userId: session.user.id,
         platform,
@@ -29,4 +30,3 @@ export async function savePost(req, res) {
       res.status(500).json({ message: "Failed to save post." });
     }
 }
-
