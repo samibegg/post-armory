@@ -39,13 +39,17 @@ export default function Header() {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Button & Sign In */}
             <div className="sm:hidden flex items-center">
               {session ? (
                   <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-700">
                     {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                   </button>
-              ) : null }
+              ) : (
+                <button onClick={() => setIsModalOpen(true)} className="px-4 py-2 text-sm font-semibold text-white bg-cyan-600 rounded-md hover:bg-cyan-700 transition-colors">
+                  Sign In
+                </button>
+              )}
             </div>
           </div>
         </div>
