@@ -121,6 +121,7 @@ export default function SavedPostCard({ post, onDelete, onPostSuccess }) {
     };
 
     const isPosted = status === 'posted';
+    const characterCount = content.length + (tags.length > 0 ? tags.join(' ').length + 1 : 0);
 
     return (
         <div className="bg-slate-800/50 ring-1 ring-slate-700/50 rounded-xl shadow-lg flex flex-col">
@@ -140,7 +141,7 @@ export default function SavedPostCard({ post, onDelete, onPostSuccess }) {
                 />
                  {!isPosted && (
                     <div className="text-right text-xs text-slate-400 mt-1">
-                        {content.length} characters
+                        {characterCount} characters
                     </div>
                 )}
                 <div className="flex flex-wrap gap-2 mt-4">

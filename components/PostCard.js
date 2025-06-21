@@ -17,7 +17,7 @@ const platformIcons = {
 export default function PostCard({ post }) {
     const { data: session } = useSession();
     const [content, setContent] = useState(post.content);
-    const [tags, setTags] = useState(post.hashtags);
+    const [tags, setTags] = useState(post.hashtags || []);
     const [saveStatus, setSaveStatus] = useState('Save to Drafts');
 
     useEffect(() => {
@@ -50,6 +50,7 @@ export default function PostCard({ post }) {
     };
 
     const platformIcon = platformIcons[post.platform] || platformIcons['default'];
+    const characterCount = content.length + (tags.length > 0 ? tags.join(' ').length + 1 : 0);
 
     return (
         <div className="bg-slate-800/50 ring-1 ring-slate-700/50 rounded-xl shadow-lg flex flex-col transition-all duration-300 hover:shadow-cyan-400/10 hover:-translate-y-1">
@@ -64,7 +65,7 @@ export default function PostCard({ post }) {
                     className="w-full p-2 bg-slate-800 border border-slate-600 rounded-md text-slate-300 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition-all h-40 resize"
                 />
                 <div className="text-right text-xs text-slate-400 mt-1">
-                    {content.length} characters
+                    {characterCount} characters
                 </div>
                 <div className="flex flex-wrap gap-2 mt-4">
                     {(tags || []).map((tag, index) => (
@@ -88,4 +89,3 @@ export default function PostCard({ post }) {
         </div>
     );
 }
-
