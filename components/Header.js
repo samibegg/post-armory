@@ -3,10 +3,12 @@ import { useState } from 'react'
 import { useSession, signOut } from "next-auth/react"
 import Link from 'next/link'
 import AuthModal from './AuthModal'
+import { Menu, X } from 'lucide-react'
 
 export default function Header() {
   const { data: session } = useSession()
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <>
@@ -18,12 +20,14 @@ export default function Header() {
                <svg className="h-8 w-8 text-cyan-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L9 13"/></svg>
               <h1 className="text-2xl font-bold text-slate-100">Post Armory</h1>
             </Link>
-            <div className="flex items-center space-x-4">
+            
+            {/* Desktop Menu */}
+            <div className="hidden sm:flex items-center space-x-4">
               {session ? (
                 <>
-                  <Link href="/generator" className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors hidden sm:block">Generator</Link>
-                  <Link href="/poster" className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors hidden sm:block">Poster</Link>
-                  <Link href="/settings" className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors hidden sm:block">Settings</Link>
+                  <Link href="/generator" className="px-3 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors">Generator</Link>
+                  <Link href="/poster" className="px-3 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors">Poster</Link>
+                  <Link href="/settings" className="px-3 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors">Settings</Link>
                   <button onClick={() => signOut()} className="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-700/50 rounded-md hover:bg-slate-700 transition-colors">
                     Sign Out
                   </button>
@@ -34,8 +38,31 @@ export default function Header() {
                 </button>
               )}
             </div>
+
+            {/* Mobile Menu Button */}
+            <div className="sm:hidden flex items-center">
+              {session ? (
+                  <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-700">
+                    {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                  </button>
+              ) : null }
+            </div>
           </div>
         </div>
+
+        {/* Mobile Menu Dropdown */}
+        {isMenuOpen && session && (
+          <div className="sm:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <Link href="/generator" className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-700">Generator</Link>
+              <Link href="/poster" className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-700">Poster</Link>
+              <Link href="/settings" className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-700">Settings</Link>
+              <button onClick={() => signOut()} className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-700">
+                Sign Out
+              </button>
+            </div>
+          </div>
+        )}
       </header>
     </>
   );
