@@ -33,7 +33,7 @@ export default async function generatePostAPI(req, res) {
     
     const finalPrompt = `${userContext}Based on the detailed context provided, generate 6 distinct social media posts for the following idea: "${idea}". 
     
-    Create one post for each platform: X (formerly Twitter), Snapchat, TikTok, LinkedIn, Facebook, and Instagram.
+    Create one post for each platform: X, Snapchat, TikTok, LinkedIn, Facebook, and Instagram.
 
     For each post, provide:
     1.  A "platform".

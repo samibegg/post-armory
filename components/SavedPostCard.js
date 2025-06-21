@@ -16,6 +16,7 @@ const platformIcons = {
 export default function SavedPostCard({ post, onDelete, onPostSuccess }) {
     const [content, setContent] = useState(post.content);
     const [tags, setTags] = useState(post.hashtags || []); // Ensure tags is always an array
+    const [status, setStatus] = useState(post.status);
     
     const [saveStatus, setSaveStatus] = useState('Save Changes');
     const [postStatus, setPostStatus] = useState('Post Now');
@@ -25,6 +26,7 @@ export default function SavedPostCard({ post, onDelete, onPostSuccess }) {
     useEffect(() => {
         setContent(post.content);
         setTags(post.hashtags || []); // Ensure tags is always an array
+        setStatus(post.status);
     }, [post]);
 
     const handleSave = async () => {
@@ -59,7 +61,6 @@ export default function SavedPostCard({ post, onDelete, onPostSuccess }) {
             }
         } catch (error) {
             console.error("Failed to update post status:", error);
-            // Even if status update fails, the post went out, so show an error but reflect reality
             setPostError("Post sent, but failed to update status in DB.");
         }
     };
@@ -119,7 +120,7 @@ export default function SavedPostCard({ post, onDelete, onPostSuccess }) {
         return `${formattedDate} @ ${formattedTime} ET`;
     };
 
-    const isPosted = post.status === 'posted';
+    const isPosted = status === 'posted';
 
     return (
         <div className="bg-slate-800/50 ring-1 ring-slate-700/50 rounded-xl shadow-lg flex flex-col">
@@ -137,6 +138,11 @@ export default function SavedPostCard({ post, onDelete, onPostSuccess }) {
                     readOnly={isPosted}
                     className={`w-full p-2 bg-slate-800 border border-slate-600 rounded-md text-slate-300 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition-all h-40 resize ${isPosted ? 'resize-none' : ''}`}
                 />
+                 {!isPosted && (
+                    <div className="text-right text-xs text-slate-400 mt-1">
+                        {content.length} characters
+                    </div>
+                )}
                 <div className="flex flex-wrap gap-2 mt-4">
                     {(tags || []).map((tag, index) => (
                         <span key={index} className="flex items-center px-3 py-1 bg-cyan-400/10 text-cyan-300 text-sm font-medium rounded-full">
@@ -184,4 +190,3 @@ export default function SavedPostCard({ post, onDelete, onPostSuccess }) {
         </div>
     );
 }
-

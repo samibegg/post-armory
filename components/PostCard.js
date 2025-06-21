@@ -22,7 +22,7 @@ export default function PostCard({ post }) {
 
     useEffect(() => {
         setContent(post.content);
-        setTags(post.hashtags);
+        setTags(post.hashtags || []);
         setSaveStatus('Save to Drafts');
     }, [post]);
 
@@ -31,7 +31,7 @@ export default function PostCard({ post }) {
         setSaveStatus('Saving...');
         try {
             const updatedPost = { ...post, content, hashtags: tags };
-            const response = await fetch('/api/save-post', { // This should point to your save-post endpoint
+            const response = await fetch('/api/save-post', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedPost)
@@ -63,8 +63,11 @@ export default function PostCard({ post }) {
                     onChange={(e) => setContent(e.target.value)}
                     className="w-full p-2 bg-slate-800 border border-slate-600 rounded-md text-slate-300 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition-all h-40 resize"
                 />
+                <div className="text-right text-xs text-slate-400 mt-1">
+                    {content.length} characters
+                </div>
                 <div className="flex flex-wrap gap-2 mt-4">
-                    {tags.map((tag, index) => (
+                    {(tags || []).map((tag, index) => (
                         <span key={index} className="flex items-center px-3 py-1 bg-cyan-400/10 text-cyan-300 text-sm font-medium rounded-full">
                             {tag}
                             <button onClick={() => removeTag(index)} className="ml-2 -mr-1 text-cyan-200 hover:text-white text-lg leading-none">&times;</button>
