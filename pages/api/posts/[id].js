@@ -14,14 +14,38 @@ export default async function handler(req, res) {
 
     if (req.method === 'PUT') {
         try {
-            const { content, hashtags } = req.body;
+            const { content, hashtags, status } = req.body;
             const client = await clientPromise;
             const db = client.db("postarmory");
             const postsCollection = db.collection("posts");
 
+            let updateData = {};
+
+            // Differentiate between a content update and a status update
+            if (status) {
+                // This is a status update (e.g., after posting)
+                if (status === 'posted') {
+                    updateData.status = 'posted';
+                    updateData.postedAt = new Date();
+                }
+            } else {
+                // This is a content/hashtag update from "Save Changes"
+                // Use hasOwnProperty to check for presence, allowing empty strings/arrays
+                if (req.body.hasOwnProperty('content')) {
+                    updateData.content = content;
+                }
+                if (req.body.hasOwnProperty('hashtags')) {
+                    updateData.hashtags = hashtags;
+                }
+            }
+
+            if (Object.keys(updateData).length === 0) {
+                return res.status(400).json({ message: "No valid update data provided." });
+            }
+
             const result = await postsCollection.updateOne(
                 { _id: new ObjectId(id), userId: session.user.id },
-                { $set: { content, hashtags } }
+                { $set: updateData }
             );
 
             if (result.matchedCount === 0) {

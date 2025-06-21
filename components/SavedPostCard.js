@@ -8,21 +8,23 @@ const platformIcons = {
     'Facebook': <Facebook className="w-5 h-5" />,
     'Instagram': <Instagram className="w-5 h-5" />,
     'LinkedIn': <Linkedin className="w-5 h-5" />,
-    'TikTok': <MessageSquare className="w-5 h-5" />, // Lucide doesn't have a TikTok icon
-    'Snapchat': <PilcrowSquare className="w-5 h-5" />, // Lucide doesn't have a Snapchat icon
+    'TikTok': <MessageSquare className="w-5 h-5" />,
+    'Snapchat': <PilcrowSquare className="w-5 h-5" />,
     'default': <ExternalLink className="w-5 h-5" />
 };
 
-export default function SavedPostCard({ post, onDelete }) {
+export default function SavedPostCard({ post, onDelete, onPostSuccess }) {
     const [content, setContent] = useState(post.content);
-    const [tags, setTags] = useState(post.hashtags);
+    const [tags, setTags] = useState(post.hashtags || []); // Ensure tags is always an array
+    
     const [saveStatus, setSaveStatus] = useState('Save Changes');
     const [postStatus, setPostStatus] = useState('Post Now');
     const [isDeleting, setIsDeleting] = useState(false);
+    const [postError, setPostError] = useState('');
 
     useEffect(() => {
         setContent(post.content);
-        setTags(post.hashtags);
+        setTags(post.hashtags || []); // Ensure tags is always an array
     }, [post]);
 
     const handleSave = async () => {
@@ -43,10 +45,57 @@ export default function SavedPostCard({ post, onDelete }) {
         }
     };
     
+    const updateStatusToPosted = async () => {
+        try {
+            const response = await fetch(`/api/posts/${post._id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'posted' }),
+            });
+            if (!response.ok) throw new Error('Failed to update post status.');
+            // Call the refresh function passed from the parent page
+            if (onPostSuccess) {
+                onPostSuccess();
+            }
+        } catch (error) {
+            console.error("Failed to update post status:", error);
+            // Even if status update fails, the post went out, so show an error but reflect reality
+            setPostError("Post sent, but failed to update status in DB.");
+        }
+    };
+
     const handlePost = async () => {
         setPostStatus('Posting...');
-        await new Promise(resolve => setTimeout(resolve, 1500)); 
-        setPostStatus('Posted!');
+        setPostError('');
+
+        if (post.platform === 'X' || post.platform === 'Twitter') {
+            try {
+                const tweetContent = `${content} ${tags.join(' ')}`;
+                const response = await fetch('/api/postTweet', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tweetText: tweetContent }),
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.details || 'Failed to post tweet.');
+                }
+                
+                setPostStatus('Posted!');
+                await updateStatusToPosted(); // This will trigger the refresh
+            } catch (error) {
+                console.error(error);
+                setPostError(error.message);
+                setPostStatus('Error!');
+                setTimeout(() => setPostStatus('Post Now'), 3000);
+            }
+        } else {
+            console.log(`Posting to ${post.platform} is not yet implemented.`);
+            setPostError(`Posting to ${post.platform} is not supported yet.`);
+            setPostStatus('Error!');
+            setTimeout(() => setPostStatus('Post Now'), 3000);
+        }
     };
     
     const removeTag = (indexToRemove) => {
@@ -70,6 +119,8 @@ export default function SavedPostCard({ post, onDelete }) {
         return `${formattedDate} @ ${formattedTime} ET`;
     };
 
+    const isPosted = post.status === 'posted';
+
     return (
         <div className="bg-slate-800/50 ring-1 ring-slate-700/50 rounded-xl shadow-lg flex flex-col">
             <div className="p-6 flex-grow">
@@ -83,16 +134,20 @@ export default function SavedPostCard({ post, onDelete }) {
                 <textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    className="w-full p-2 bg-slate-800 border border-slate-600 rounded-md text-slate-300 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition-all h-40 resize"
+                    readOnly={isPosted}
+                    className={`w-full p-2 bg-slate-800 border border-slate-600 rounded-md text-slate-300 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition-all h-40 resize ${isPosted ? 'resize-none' : ''}`}
                 />
                 <div className="flex flex-wrap gap-2 mt-4">
-                    {tags.map((tag, index) => (
+                    {(tags || []).map((tag, index) => (
                         <span key={index} className="flex items-center px-3 py-1 bg-cyan-400/10 text-cyan-300 text-sm font-medium rounded-full">
                             {tag}
-                            <button onClick={() => removeTag(index)} className="ml-2 -mr-1 text-cyan-200 hover:text-white text-lg leading-none">&times;</button>
+                            {!isPosted && (
+                                <button onClick={() => removeTag(index)} className="ml-2 -mr-1 text-cyan-200 hover:text-white text-lg leading-none">&times;</button>
+                            )}
                         </span>
                     ))}
                 </div>
+                {postError && <p className="text-xs text-red-400 mt-2">{postError}</p>}
             </div>
             <div className="flex items-center justify-between p-4 border-t border-slate-700/50 bg-slate-800/30 rounded-b-xl">
                  <div>
@@ -108,22 +163,25 @@ export default function SavedPostCard({ post, onDelete }) {
                     )}
                  </div>
                  <div className="flex items-center space-x-3">
-                    <button 
-                        onClick={handleSave} 
-                        disabled={saveStatus !== 'Save Changes'} 
-                        className="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-700/50 rounded-md hover:bg-slate-700 transition-colors disabled:opacity-50"
-                    >
-                        <span>{saveStatus}</span>
-                    </button>
+                    {!isPosted && (
+                        <button 
+                            onClick={handleSave} 
+                            disabled={saveStatus !== 'Save Changes'} 
+                            className="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-700/50 rounded-md hover:bg-slate-700 transition-colors disabled:opacity-50"
+                        >
+                            <span>{saveStatus}</span>
+                        </button>
+                    )}
                      <button 
                         onClick={handlePost} 
-                        disabled={postStatus !== 'Post Now'} 
+                        disabled={postStatus !== 'Post Now' || isPosted} 
                         className="flex items-center space-x-2 px-4 py-2 text-sm font-semibold text-white bg-cyan-600 rounded-md hover:bg-cyan-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-600"
                     >
-                        <span>{postStatus}</span>
+                        <span>{isPosted ? 'Posted' : postStatus}</span>
                     </button>
                  </div>
             </div>
         </div>
     );
 }
+
