@@ -69,18 +69,40 @@ export default function SavedPostCard({ post, onDelete, onPostSuccess }) {
         setPostStatus('Posting...');
         setPostError('');
 
+        const postContent = `${content} ${tags.join(' ')}`;
+
         if (post.platform === 'X' || post.platform === 'Twitter') {
             try {
-                const tweetContent = `${content} ${tags.join(' ')}`;
                 const response = await fetch('/api/postTweet', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ tweetText: tweetContent }),
+                    body: JSON.stringify({ tweetText: postContent }),
                 });
 
                 const data = await response.json();
                 if (!response.ok) {
                     throw new Error(data.details || 'Failed to post tweet.');
+                }
+                
+                setPostStatus('Posted!');
+                await updateStatusToPosted();
+            } catch (error) {
+                console.error(error);
+                setPostError(error.message);
+                setPostStatus('Error!');
+                setTimeout(() => setPostStatus('Post Now'), 3000);
+            }
+        } else if (post.platform === 'Facebook') { // <<< NEW LOGIC HERE
+            try {
+                const response = await fetch('/api/postToFacebook', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ postText: postContent }),
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.details || 'Failed to post to Facebook.');
                 }
                 
                 setPostStatus('Posted!');
