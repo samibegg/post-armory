@@ -25,6 +25,7 @@ export default function Header() {
             <div className="hidden sm:flex items-center space-x-4">
               {session ? (
                 <>
+                  <Link href="/guidelines" className="px-3 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors">Guidelines</Link>
                   <Link href="/generator" className="px-3 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors">Generator</Link>
                   <Link href="/poster" className="px-3 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors">Poster</Link>
                   <Link href="/settings" className="px-3 py-2 text-sm font-semibold text-slate-300 hover:text-cyan-400 transition-colors">Settings</Link>
