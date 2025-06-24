@@ -37,8 +37,12 @@ export default async function generatePostAPI(req, res) {
 
     For each post, provide:
     1.  A "platform".
-    2.  A "content" body tailored to the platform's style. For TikTok/Snapchat, suggest a visual idea/script.
-    3.  A list of relevant "hashtags".
+    2.  A "content" body tailored to the platform's style: 
+        - For X, keep total characters (including whitespaces) under 280. 
+        - For LinkedIn, keep total words 200-250
+        - For Facebook, keep 40–80 characters with a clear CTA.   
+        - For TikTok/Snapchat, suggest a visual idea/script.
+    3.  Include hashtags.
 
     Return the result as a JSON array.`;
 
@@ -47,7 +51,7 @@ export default async function generatePostAPI(req, res) {
         generationConfig: {
             responseMimeType: "application/json",
             responseSchema: {
-                type: "ARRAY", items: { type: "OBJECT", properties: { platform: { type: "STRING" }, content: { type: "STRING" }, hashtags: { type: "ARRAY", items: { type: "STRING" } } }, required: ["platform", "content", "hashtags"] }
+                type: "ARRAY", items: { type: "OBJECT", properties: { platform: { type: "STRING" }, content: { type: "STRING" } }, required: ["platform", "content"] }
             }
         }
     };
