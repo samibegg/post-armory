@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 // Accept an initialPrompt prop to pre-fill the textarea
 export default function ImageGenerator({ initialPrompt = '' }) {
@@ -91,7 +92,14 @@ export default function ImageGenerator({ initialPrompt = '' }) {
         <div className="mt-8 text-center">
             <h3 className="text-lg font-semibold text-slate-200 mb-4">Your Generated Image:</h3>
             <div className="p-2 bg-slate-800/30 ring-1 ring-slate-700/50 inline-block rounded-lg">
-                <img src={imageUrl} alt="AI generated content" className="rounded-md shadow-lg mx-auto" />
+                <Image
+                  src={imageUrl}
+                  alt="AI generated content"
+                  width={1024} // Required: The intrinsic width of the image
+                  height={1024} // Required: The intrinsic height of the image
+                  className="rounded-md shadow-lg mx-auto"
+                  priority // Optional: Loads the image immediately instead of lazy-loading
+                />
             </div>
         </div>
       )}
