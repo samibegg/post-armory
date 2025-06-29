@@ -17,12 +17,17 @@ const platformIcons = {
 export default function PostCard({ post }) {
     const { data: session } = useSession();
     const [content, setContent] = useState(post.content);
-    const [tags, setTags] = useState(post.hashtags || []);
+    const [tags, setTags] = useState([]);
     const [saveStatus, setSaveStatus] = useState('Save to Drafts');
 
     useEffect(() => {
         setContent(post.content);
-        setTags(post.hashtags || []);
+        // Ensure hashtags are always an array, even if they come in as a string
+        if (typeof post.hashtags === 'string') {
+            setTags(post.hashtags.split(/[ ,]+/).filter(tag => tag.startsWith('#')));
+        } else {
+            setTags(post.hashtags || []);
+        }
         setSaveStatus('Save to Drafts');
     }, [post]);
 
@@ -50,7 +55,9 @@ export default function PostCard({ post }) {
     };
 
     const platformIcon = platformIcons[post.platform] || platformIcons['default'];
-    const characterCount = content.length + (tags.length > 0 ? tags.join(' ').length + 1 : 0);
+    // Safely calculate character count
+    const characterCount = (content || '').length + (tags.length > 0 ? (tags.join(' ').length + 1) : 0);
+
 
     return (
         <div className="bg-slate-800/50 ring-1 ring-slate-700/50 rounded-xl shadow-lg flex flex-col transition-all duration-300 hover:shadow-cyan-400/10 hover:-translate-y-1">
@@ -68,7 +75,7 @@ export default function PostCard({ post }) {
                     {characterCount} characters
                 </div>
                 <div className="flex flex-wrap gap-2 mt-4">
-                    {(tags || []).map((tag, index) => (
+                    {tags.map((tag, index) => ( // map is now safe because tags is guaranteed to be an array
                         <span key={index} className="flex items-center px-3 py-1 bg-cyan-400/10 text-cyan-300 text-sm font-medium rounded-full">
                             {tag}
                             <button onClick={() => removeTag(index)} className="ml-2 -mr-1 text-cyan-200 hover:text-white text-lg leading-none">&times;</button>

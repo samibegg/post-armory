@@ -1,4 +1,4 @@
-// --- /pages/api/settings.js ---
+// --- /pages/api/settings.js (UPDATED) ---
 import { getServerSession } from "next-auth/next"
 import { nextAuthOptions } from "@/lib/auth"
 import clientPromiseSettings from '@/lib/mongodb';
@@ -17,20 +17,23 @@ export default async function handler(req, res) {
 
     if (req.method === 'POST') {
         const {
-            business_name, address, phone, email, system_prompt,
+            business_name, address, phone, email, system_prompt, llm_provider,
             include_business_name, include_address, include_phone, include_email,
-            x_api_key, facebook_token, instagram_token, linkedin_token, tiktok_token, snapchat_token,
+            openai_api_key, anthropic_api_key, gemini_api_key,
+            facebook_token, instagram_token, linkedin_token, tiktok_token, snapchat_token,
             x_url, facebook_url, instagram_url, linkedin_url, tiktok_url, snapchat_url, website_url
         } = req.body;
 
         const settingsUpdate = {
-            business_name, address, phone, email, system_prompt,
+            business_name, address, phone, email, system_prompt, llm_provider,
             include_business_name, include_address, include_phone, include_email,
             x_url, facebook_url, instagram_url, linkedin_url, tiktok_url, snapchat_url, website_url
         };
         
         // Encrypt all tokens/keys
-        if (x_api_key) settingsUpdate.x_api_key = encrypt(x_api_key);
+        if (openai_api_key) settingsUpdate.openai_api_key = encrypt(openai_api_key);
+        if (anthropic_api_key) settingsUpdate.anthropic_api_key = encrypt(anthropic_api_key);
+        if (gemini_api_key) settingsUpdate.gemini_api_key = encrypt(gemini_api_key);
         if (facebook_token) settingsUpdate.facebook_token = encrypt(facebook_token);
         if (instagram_token) settingsUpdate.instagram_token = encrypt(instagram_token);
         if (linkedin_token) settingsUpdate.linkedin_token = encrypt(linkedin_token);
@@ -55,6 +58,7 @@ export default async function handler(req, res) {
             phone: settings?.phone || '',
             email: settings?.email || '',
             system_prompt: settings?.system_prompt || '',
+            llm_provider: settings?.llm_provider || 'gemini', // default to gemini
             include_business_name: settings?.include_business_name || false,
             include_address: settings?.include_address || false,
             include_phone: settings?.include_phone || false,
@@ -69,7 +73,9 @@ export default async function handler(req, res) {
         };
 
         // Decrypt all tokens/keys
-        if (settings?.x_api_key) decryptedSettings.x_api_key = decrypt(settings.x_api_key);
+        if (settings?.openai_api_key) decryptedSettings.openai_api_key = decrypt(settings.openai_api_key);
+        if (settings?.anthropic_api_key) decryptedSettings.anthropic_api_key = decrypt(settings.anthropic_api_key);
+        if (settings?.gemini_api_key) decryptedSettings.gemini_api_key = decrypt(settings.gemini_api_key);
         if (settings?.facebook_token) decryptedSettings.facebook_token = decrypt(settings.facebook_token);
         if (settings?.instagram_token) decryptedSettings.instagram_token = decrypt(settings.instagram_token);
         if (settings?.linkedin_token) decryptedSettings.linkedin_token = decrypt(settings.linkedin_token);
@@ -82,4 +88,3 @@ export default async function handler(req, res) {
     res.setHeader('Allow', ['GET', 'POST']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
 }
-
