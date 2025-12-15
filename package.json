@@ -18,7 +18,7 @@
     "google-auth-library": "^10.1.0",
     "lucide-react": "^0.519.0",
     "mongodb": "^5.9.2",
-    "next": "15.3.4",
+    "next": "15.3.8",
     "next-auth": "^4.24.11",
     "nodemailer": "^6.10.1",
     "openai": "^5.8.2",
